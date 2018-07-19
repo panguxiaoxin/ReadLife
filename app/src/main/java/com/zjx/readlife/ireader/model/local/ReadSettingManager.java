@@ -18,6 +18,12 @@ public class ReadSettingManager {
     public static final int READ_BG_4 = 4;
     public static final int NIGHT_MODE = 5;
 
+    /*************字体******************/
+    public static final int READ_FONT_DEFAULT = 0;//系统默认
+    public static final int READ_FONT_KAI = 1;//楷体
+    public static final int READ_FONT_HEI = 2;//黑体
+    public static final int READ_FONT_SUN = 3;//宋体
+
     public static final String SHARED_READ_BG = "shared_read_bg";
     public static final String SHARED_READ_BRIGHTNESS = "shared_read_brightness";
     public static final String SHARED_READ_IS_BRIGHTNESS_AUTO = "shared_read_is_brightness_auto";
@@ -27,6 +33,7 @@ public class ReadSettingManager {
     public static final String SHARED_READ_NIGHT_MODE = "shared_night_mode";
     public static final String SHARED_READ_VOLUME_TURN_PAGE = "shared_read_volume_turn_page";
     public static final String SHARED_READ_FULL_SCREEN = "shared_read_full_screen";
+    public static final String SHARED_READ_FONT_STYLE= "shared_read_font_style";
 
     private static volatile ReadSettingManager sInstance;
 
@@ -65,7 +72,9 @@ public class ReadSettingManager {
     public void setTextSize(int textSize){
         sharedPreUtils.putInt(SHARED_READ_TEXT_SIZE,textSize);
     }
-
+    public void setTextFont(String textFont){
+        sharedPreUtils.putString(SHARED_READ_FONT_STYLE,textFont);
+    }
     public void setPageMode(int mode){
         sharedPreUtils.putInt(SHARED_READ_PAGE_MODE,mode);
     }
@@ -81,7 +90,9 @@ public class ReadSettingManager {
     public boolean isBrightnessAuto(){
         return sharedPreUtils.getBoolean(SHARED_READ_IS_BRIGHTNESS_AUTO, false);
     }
-
+    public String getTextFont(){
+        return sharedPreUtils.getString(SHARED_READ_FONT_STYLE);
+    }
     public int getTextSize(){
         return sharedPreUtils.getInt(SHARED_READ_TEXT_SIZE, ScreenUtils.spToPx(28));
     }

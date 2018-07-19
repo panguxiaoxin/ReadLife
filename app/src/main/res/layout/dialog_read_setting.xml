@@ -81,7 +81,7 @@
         
         <TextView
             android:id="@+id/read_setting_tv_font_minus"
-            android:layout_width="100dp"
+            android:layout_width="80dp"
             android:layout_height="@dimen/nb.read_setting.btn_height"
             android:gravity="center"
             android:text="Aa-"
@@ -101,7 +101,7 @@
         
         <TextView
             android:id="@+id/read_setting_tv_font_plus"
-            android:layout_width="100dp"
+            android:layout_width="80dp"
             android:layout_height="@dimen/nb.read_setting.btn_height"
             android:layout_marginRight="20dp"
             android:gravity="center"
@@ -117,9 +117,20 @@
             android:layout_height="@dimen/nb.read_setting.btn_height"
             android:gravity="center"
             android:text="默认"
+            android:layout_marginRight="20dp"
             android:button="@null"
             android:textColor="@color/selector_btn_read_setting"
             android:background="@drawable/selector_btn_read_setting"
+            style="@style/NB.Theme.TextAppearance.Read.BottomMenu" />
+        <TextView
+            android:id="@+id/read_setting_tv_font_style"
+            android:layout_width="40dp"
+            android:layout_height="@dimen/nb.read_setting.btn_height"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="T"
+            android:textSize="18dp"
+            android:background="@drawable/shape_btn_read_setting_normal"
             style="@style/NB.Theme.TextAppearance.Read.BottomMenu" />
     </LinearLayout>
     
@@ -195,7 +206,7 @@
             android:background="@drawable/selector_btn_read_setting"
             style="@style/NB.Theme.TextAppearance.Read.BottomMenu"/>
     </RadioGroup>
-    
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/read_setting_rv_bg"
         android:layout_width="match_parent"

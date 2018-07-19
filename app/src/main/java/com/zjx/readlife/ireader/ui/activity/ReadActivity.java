@@ -69,6 +69,7 @@ public class ReadActivity extends BaseMVPActivity<ReadContract.Presenter>
  implements ReadContract.View{
     private static final String TAG = "ReadActivity";
     public static final int REQUEST_MORE_SETTING = 1;
+    public static final int REQUEST_FONT_SETTING = 2;
     public static final String EXTRA_COLL_BOOK = "extra_coll_book";
     public static final String EXTRA_IS_COLLECTED = "extra_is_collected";
 
@@ -179,6 +180,7 @@ public class ReadActivity extends BaseMVPActivity<ReadContract.Presenter>
     private boolean isCollected = false; //isFromSDCard
     private boolean isNightMode = false;
     private boolean isFullScreen = false;
+    private String  fontStyle="";
     private String mBookId;
 
     public static void startActivity(Context context, CollBookBean collBook, boolean isCollected){
@@ -204,7 +206,7 @@ public class ReadActivity extends BaseMVPActivity<ReadContract.Presenter>
         isCollected = getIntent().getBooleanExtra(EXTRA_IS_COLLECTED,false);
         isNightMode = ReadSettingManager.getInstance().isNightMode();
         isFullScreen = ReadSettingManager.getInstance().isFullScreen();
-
+        fontStyle=ReadSettingManager.getInstance().getTextFont();
         mBookId = mCollBook.get_id();
     }
 
@@ -770,6 +772,11 @@ public class ReadActivity extends BaseMVPActivity<ReadContract.Presenter>
             }
             else {
                 SystemBarUtils.showStableNavBar(this);
+            }
+        }else if(requestCode == REQUEST_FONT_SETTING){
+            if(!fontStyle.equals(ReadSettingManager.getInstance().getTextFont())){
+                fontStyle=ReadSettingManager.getInstance().getTextFont();
+                mPageLoader.setFontStyle(fontStyle);
             }
         }
     }

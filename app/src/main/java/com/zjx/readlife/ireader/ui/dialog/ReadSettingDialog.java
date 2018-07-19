@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.zjx.readlife.ireader.R;
 import com.zjx.readlife.ireader.model.local.ReadSettingManager;
+import com.zjx.readlife.ireader.ui.activity.FontActivity;
 import com.zjx.readlife.ireader.ui.activity.MoreSettingActivity;
 import com.zjx.readlife.ireader.ui.activity.ReadActivity;
 import com.zjx.readlife.ireader.ui.adapter.ReadBgAdapter;
@@ -56,6 +57,8 @@ public class ReadSettingDialog extends Dialog{
     TextView mTvFont;
     @BindView(R.id.read_setting_tv_font_plus)
     TextView mTvFontPlus;
+    @BindView(R.id.read_setting_tv_font_style)
+    TextView mTvFontStyle;
     @BindView(R.id.read_setting_cb_font_default)
     CheckBox mCbFontDefault;
     @BindView(R.id.read_setting_rg_page_mode)
@@ -267,7 +270,14 @@ public class ReadSettingDialog extends Dialog{
                     mPageLoader.setTextSize(fontSize);
                 }
         );
-
+        mTvFontStyle.setOnClickListener(
+                (v) ->  {
+                    Intent intent = new Intent(getContext(), FontActivity.class);
+                    mActivity.startActivityForResult(intent, ReadActivity.REQUEST_FONT_SETTING);
+                    //关闭当前设置
+                    dismiss();
+                }
+        );
         mCbFontDefault.setOnCheckedChangeListener(
                 (buttonView, isChecked) -> {
                     if (isChecked){

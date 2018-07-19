@@ -10,6 +10,7 @@ import android.graphics.Typeface;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.zjx.readlife.ireader.App;
@@ -119,6 +120,8 @@ public abstract class PageLoader{
     //间距
     private int mMarginWidth;
     private int mMarginHeight;
+    //字体的style
+    private String  mTextFont;
     //字体的颜色
     private int mTextColor;
     //标题的大小
@@ -156,6 +159,7 @@ public abstract class PageLoader{
     private void initData(){
         mSettingManager = ReadSettingManager.getInstance();
         mTextSize = mSettingManager.getTextSize();
+        mTextFont=mSettingManager.getTextFont();
         mTitleSize = mTextSize + ScreenUtils.spToPx(EXTRA_TITLE_SIZE);
         mPageMode = mSettingManager.getPageMode();
         isNightMode = mSettingManager.isNightMode();
@@ -178,7 +182,11 @@ public abstract class PageLoader{
     }
 
     private void initPaint(){
-        Typeface typeFace = Typeface.createFromAsset(App.getContext().getAssets(),"fonts/KaiTi.ttf");
+        Typeface typeFace=null;
+        if(!TextUtils.isEmpty(mTextFont)){
+            typeFace= Typeface.createFromAsset(App.getContext().getAssets(),mTextFont);
+        }
+
         //绘制提示的画笔
         mTipPaint = new Paint();
         mTipPaint.setColor(mTextColor);
@@ -186,14 +194,16 @@ public abstract class PageLoader{
         mTipPaint.setTextSize(ScreenUtils.spToPx(DEFAULT_TIP_SIZE));//Tip默认的字体大小
         mTipPaint.setAntiAlias(true);
         mTipPaint.setSubpixelText(true);
-        mTipPaint.setTypeface(typeFace);
+        if(typeFace!=null){
+        mTipPaint.setTypeface(typeFace);}
 
         //绘制页面内容的画笔
         mTextPaint = new TextPaint();
         mTextPaint.setColor(mTextColor);
         mTextPaint.setTextSize(mTextSize);
         mTextPaint.setAntiAlias(true);
-        mTextPaint.setTypeface(typeFace);
+        if(typeFace!=null){
+        mTextPaint.setTypeface(typeFace);}
 
         //绘制标题的画笔
         mTitlePaint = new TextPaint();
@@ -201,12 +211,14 @@ public abstract class PageLoader{
         mTitlePaint.setTextSize(mTitleSize);
         mTitlePaint.setStyle(Paint.Style.FILL_AND_STROKE);
         mTitlePaint.setAntiAlias(true);
-        mTitlePaint.setTypeface(typeFace);
+        if(typeFace!=null){
+        mTitlePaint.setTypeface(typeFace);}
         mTitlePaint.setFakeBoldText(true);
         //绘制背景的画笔
         mBgPaint = new Paint();
         mBgPaint.setColor(mPageBg);
-        mBgPaint.setTypeface(typeFace);
+        if(typeFace!=null){
+        mBgPaint.setTypeface(typeFace);}
         mBatteryPaint = new Paint();
         mBatteryPaint.setAntiAlias(true);
         mBatteryPaint.setDither(true);
@@ -408,7 +420,27 @@ public abstract class PageLoader{
             mPageView.refreshPage();
         }
     }
+    //字体修改
+    public void setFontStyle(String fontStyle){
 
+       if(!mTextFont.equals(fontStyle)){
+           mTextFont=fontStyle;
+           if (isBookOpen){
+               //设置参数
+
+               if(!TextUtils.isEmpty(mTextFont)){
+                   Typeface typeFace= Typeface.createFromAsset(App.getContext().getAssets(),mTextFont);
+                   mTextPaint.setTypeface(typeFace);
+               }else{
+                   mTextPaint.setTypeface(Typeface.DEFAULT);
+               }
+               //重绘
+               mPageView.refreshPage();
+           }
+       }
+
+
+    }
     //翻页动画
     public void setPageMode(int pageMode){
         mPageMode = pageMode;
