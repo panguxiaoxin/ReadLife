@@ -22,7 +22,7 @@ public class ReadSettingManager {
     public static final int READ_FONT_DEFAULT = 0;//系统默认
     public static final int READ_FONT_KAI = 1;//楷体
     public static final int READ_FONT_HEI = 2;//黑体
-    public static final int READ_FONT_SUN = 3;//宋体
+
 
     public static final String SHARED_READ_BG = "shared_read_bg";
     public static final String SHARED_READ_BRIGHTNESS = "shared_read_brightness";

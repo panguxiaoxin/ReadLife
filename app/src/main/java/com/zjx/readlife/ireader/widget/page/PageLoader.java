@@ -218,7 +218,8 @@ public abstract class PageLoader{
         mBgPaint = new Paint();
         mBgPaint.setColor(mPageBg);
         if(typeFace!=null){
-        mBgPaint.setTypeface(typeFace);}
+        mBgPaint.setTypeface(typeFace);
+        }
         mBatteryPaint = new Paint();
         mBatteryPaint.setAntiAlias(true);
         mBatteryPaint.setDither(true);
@@ -431,8 +432,14 @@ public abstract class PageLoader{
                if(!TextUtils.isEmpty(mTextFont)){
                    Typeface typeFace= Typeface.createFromAsset(App.getContext().getAssets(),mTextFont);
                    mTextPaint.setTypeface(typeFace);
+                   mTitlePaint.setTypeface(typeFace);
+                   mBatteryPaint.setTypeface(typeFace);
+                   mTipPaint.setTypeface(typeFace);
                }else{
                    mTextPaint.setTypeface(Typeface.DEFAULT);
+                   mTitlePaint.setTypeface(Typeface.DEFAULT);
+                   mBatteryPaint.setTypeface(Typeface.DEFAULT);
+                   mTipPaint.setTypeface(Typeface.DEFAULT);
                }
                //重绘
                mPageView.refreshPage();

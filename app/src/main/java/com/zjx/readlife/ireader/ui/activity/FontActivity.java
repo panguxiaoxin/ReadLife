@@ -20,11 +20,10 @@ public class FontActivity extends BaseActivity {
     RadioButton rb_kaiti;
     @BindView(R.id.font_hei)
     RadioButton rb_hei;
-    @BindView(R.id.font_sun)
-    RadioButton rb_sun;
+
     @BindView(R.id.font_group)
     RadioGroup rg_font;
-   String [] fonts={"","fonts/KaiTi.ttf","fonts/SimHei.ttf","fonts/SimSun.ttf"};
+   String [] fonts={"","fonts/KaiTi.ttf","fonts/SimHei.ttf"};
     @Override
     protected int getContentId() {
         return R.layout.activity_font;
@@ -40,6 +39,12 @@ public class FontActivity extends BaseActivity {
     protected void initData(Bundle savedInstanceState) {
         super.initData(savedInstanceState);
         mSettingManager = ReadSettingManager.getInstance();
+
+    }
+
+    @Override
+    protected void initClick() {
+        super.initClick();
         String  fontStyle=mSettingManager.getTextFont();
         int number=0;
         for(int i=0;i<fonts.length;i++){
@@ -48,27 +53,20 @@ public class FontActivity extends BaseActivity {
                 break;
             }
         }
-       switch (number){
-           case 0:
-               rb_system.setChecked(true);
-               break;
-           case 1:
-               rb_kaiti.setChecked(true);
-               break;
-           case 2:
-               rb_hei.setChecked(true);
-               break;
-           case 3:
-               rb_hei.setChecked(true);
-               break;
+        switch (number){
+            case 0:
+                rb_system.setChecked(true);
+                break;
+            case 1:
+                  rb_kaiti.setChecked(true);
+                break;
+            case 2:
+                   rb_hei.setChecked(true);
+                break;
 
-       }
-    }
 
-    @Override
-    protected void initClick() {
-        super.initClick();
-        rg_font.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        }
+      rg_font.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 switch (i){
@@ -81,9 +79,7 @@ public class FontActivity extends BaseActivity {
                     case R.id.font_hei:
                         mSettingManager.setTextFont(fonts[2]);
                         break;
-                    case R.id.font_sun:
-                        mSettingManager.setTextFont(fonts[3]);
-                        break;
+
                 }
             }
         });
