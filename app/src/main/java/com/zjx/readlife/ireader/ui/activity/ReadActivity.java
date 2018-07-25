@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.ContentObserver;
@@ -32,8 +33,10 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.zjx.readlife.ireader.R;
+import com.zjx.readlife.ireader.RxBus;
 import com.zjx.readlife.ireader.model.bean.BookChapterBean;
 import com.zjx.readlife.ireader.model.bean.CollBookBean;
+import com.zjx.readlife.ireader.model.bean.DownloadTaskBean;
 import com.zjx.readlife.ireader.model.local.BookRepository;
 import com.zjx.readlife.ireader.model.local.ReadSettingManager;
 import com.zjx.readlife.ireader.presenter.ReadPresenter;
@@ -111,8 +114,8 @@ public class ReadActivity extends BaseMVPActivity<ReadContract.Presenter>
     TextView mTvCategory;
     @BindView(R.id.read_tv_night_mode)
     TextView mTvNightMode;
-/*    @BindView(R.id.read_tv_download)
-    TextView mTvDownload;*/
+   @BindView(R.id.read_tv_download)
+    TextView mTvDownload;
     @BindView(R.id.read_tv_setting)
     TextView mTvSetting;
 
@@ -484,7 +487,33 @@ public class ReadActivity extends BaseMVPActivity<ReadContract.Presenter>
                     toggleNightMode();
                 }
         );
-
+        mTvDownload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ReadActivity.this);
+                builder.setTitle("缓存多少章？")
+                        .setItems(new String[]{"后面五十章", "后面全部", "全部"}, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                switch (which) {
+                                    case 0:
+                                    case 1:
+                                    case 2:
+                                        DownloadTaskBean task = new DownloadTaskBean();
+                                        task.setTaskName(mCollBook.getTitle());
+                                        task.setBookId(mCollBook.get_id());
+                                        task.setBookChapters(mCollBook.getBookChapters());
+                                        task.setLastChapter(mCollBook.getBookChapters().size());
+                                        RxBus.getInstance().post(task);
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                        });
+                builder.show();
+            }
+        });
         mTvBrief.setOnClickListener(
                 (v) -> BookDetailActivity.startActivity(this,mBookId)
         );

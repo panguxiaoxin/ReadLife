@@ -44,7 +44,7 @@ public class DownloadService extends BaseService {
     private static final int LOAD_PAUSE = 1;
     private static final int LOAD_DELETE = 2; //正在加载时候，用户删除收藏书籍的情况。
 
-    //下载状态
+    //下载状态北京正邦品牌设计
     public static final int STATUS_CONTINUE = DownloadTaskBean.STATUS_LOADING;
     public static final int STATUS_PAUSE = DownloadTaskBean.STATUS_PAUSE;
 

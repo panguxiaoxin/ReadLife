@@ -141,11 +141,11 @@
                     android:drawableTop="@drawable/ic_read_menu_night"
                     android:text="@string/nb.mode.night" />
                 
-<!--                <TextView
+               <TextView
                     style="@style/NB.Theme.TextAppearance.Read.BottomMenu.Button"
                     android:id="@+id/read_tv_download"
                     android:drawableTop="@drawable/ic_read_menu_download"
-                    android:text="@string/nb.read.download" />-->
+                    android:text="@string/nb.read.download" />
                 
                 <TextView
                     style="@style/NB.Theme.TextAppearance.Read.BottomMenu.Button"
