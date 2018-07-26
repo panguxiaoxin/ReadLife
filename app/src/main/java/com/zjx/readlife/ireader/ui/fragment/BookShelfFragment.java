@@ -98,7 +98,10 @@ public class BookShelfFragment extends BaseMVPFragment<BookShelfContract.Present
                 .subscribe(
                         event -> {
                             //使用Toast提示
-                            ToastUtils.show(event.message);
+                         if(BookShelfFragment.this.isResumed()){
+                             ToastUtils.show(event.message);
+                         }
+
                         }
                 );
         addDisposable(donwloadDisp);

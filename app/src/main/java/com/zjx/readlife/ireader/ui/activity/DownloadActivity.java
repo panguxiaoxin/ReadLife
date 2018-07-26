@@ -119,11 +119,11 @@ public class DownloadActivity extends BaseActivity implements DownloadService.On
     }
 
     @Override
-    public void onDownloadChange(int pos, int status, String msg) {
+    public void onDownloadChange(int pos, int status, int chapterIndex,String msg) {
         DownloadTaskBean bean = mDownloadAdapter.getItem(pos);
         bean.setStatus(status);
         if (DownloadTaskBean.STATUS_LOADING == status){
-            bean.setCurrentChapter(Integer.valueOf(msg));
+            bean.setCurrentChapter(chapterIndex);
         }
         mDownloadAdapter.notifyItemChanged(pos);
     }

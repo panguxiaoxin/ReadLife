@@ -160,7 +160,7 @@
     <string name="nb.download.pausing">暂停中</string>
     <string name="nb.download.complete">已完成</string>
     <string name="nb.download.source_error">资源或网络错误</string>
-
+    <string name="book_read_download_progress">正在缓存:%1$s(%2$d/%3$d)...</string>
     <!--mode-->
     <string name="nb.mode.night">夜间</string>
     <string name="nb.mode.morning">日间</string>

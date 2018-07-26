@@ -223,9 +223,9 @@ public class DownloadService extends BaseService {
 
                     //设置任务进度
                     taskEvent.setCurrentChapter(i);
-
+                    String message=  String.format(getString(R.string.book_read_download_progress), bookChapterBean.getTitle(), i+1, bookChapterBeans.size());
                     //章节加载完成
-                    postDownloadChange(taskEvent, DownloadTaskBean.STATUS_LOADING, i + "");
+                    postDownloadChange(taskEvent, DownloadTaskBean.STATUS_LOADING, i ,message);
 
                     //无需进行下一步
                     continue;
@@ -249,7 +249,9 @@ public class DownloadService extends BaseService {
                 //章节加载完成
                 if (result == LOAD_NORMAL){
                     taskEvent.setCurrentChapter(i);
-                    postDownloadChange(taskEvent, DownloadTaskBean.STATUS_LOADING, i + "");
+
+                    String message=  String.format(getString(R.string.book_read_download_progress), bookChapterBean.getTitle(), i+1, bookChapterBeans.size());
+                    postDownloadChange(taskEvent, DownloadTaskBean.STATUS_LOADING, i ,message);
                 }
                 //章节加载失败
                 else {
@@ -266,16 +268,16 @@ public class DownloadService extends BaseService {
                 taskEvent.setSize(BookManager.getBookSize(taskEvent.getBookId()));//Task的大小
 
                 //发送完成状态
-                postDownloadChange(taskEvent, DownloadTaskBean.STATUS_FINISH, "下载完成");
+                postDownloadChange(taskEvent, DownloadTaskBean.STATUS_FINISH, 0,"下载完成");
             }
             else if (result == LOAD_ERROR){
                 taskEvent.setStatus(DownloadTaskBean.STATUS_ERROR);//Task的状态
                 //任务加载失败
-                postDownloadChange(taskEvent, DownloadTaskBean.STATUS_ERROR, "资源或网络错误");
+                postDownloadChange(taskEvent, DownloadTaskBean.STATUS_ERROR, 0,"资源或网络错误");
             }
             else if (result == LOAD_PAUSE){
                 taskEvent.setStatus(DownloadTaskBean.STATUS_PAUSE);//Task的状态
-                postDownloadChange(taskEvent, DownloadTaskBean.STATUS_PAUSE, "暂停加载");
+                postDownloadChange(taskEvent, DownloadTaskBean.STATUS_PAUSE, 0,"暂停加载");
             }
             else if (result == LOAD_DELETE){
                 //没想好怎么做
@@ -323,13 +325,13 @@ public class DownloadService extends BaseService {
         return result[0];
     }
 
-    private void postDownloadChange(DownloadTaskBean task,int status,String msg){
+    private void postDownloadChange(DownloadTaskBean task,int status,int chapterIndex,String msg){
         if (mDownloadListener!= null){
             int position = mDownloadTaskList.indexOf(task);
             //通过handler,切换回主线程
             mHandler.post(
                     () -> mDownloadListener.onDownloadChange(
-                            position, status, msg)
+                            position, status, chapterIndex,msg)
             );
         }
     }
@@ -430,9 +432,10 @@ public class DownloadService extends BaseService {
          *
          * @param pos : Task在item中的位置
          * @param status : Task的状态
+         * @param chapterIndex : 下载章节位置
          * @param msg: 传送的Msg
          */
-        void onDownloadChange(int pos,int status,String msg);
+        void onDownloadChange(int pos,int status,int chapterIndex,String msg);
 
         /**
          * 回复

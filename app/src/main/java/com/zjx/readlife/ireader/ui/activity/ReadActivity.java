@@ -1,18 +1,22 @@
 package com.zjx.readlife.ireader.ui.activity;
 
 import android.app.Activity;
+import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.database.ContentObserver;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.support.design.widget.AppBarLayout;
@@ -34,6 +38,7 @@ import android.widget.TextView;
 
 import com.zjx.readlife.ireader.R;
 import com.zjx.readlife.ireader.RxBus;
+import com.zjx.readlife.ireader.event.DownloadMessage;
 import com.zjx.readlife.ireader.model.bean.BookChapterBean;
 import com.zjx.readlife.ireader.model.bean.CollBookBean;
 import com.zjx.readlife.ireader.model.bean.DownloadTaskBean;
@@ -41,6 +46,7 @@ import com.zjx.readlife.ireader.model.local.BookRepository;
 import com.zjx.readlife.ireader.model.local.ReadSettingManager;
 import com.zjx.readlife.ireader.presenter.ReadPresenter;
 import com.zjx.readlife.ireader.presenter.contract.ReadContract;
+import com.zjx.readlife.ireader.service.DownloadService;
 import com.zjx.readlife.ireader.ui.adapter.CategoryAdapter;
 import com.zjx.readlife.ireader.ui.base.BaseMVPActivity;
 import com.zjx.readlife.ireader.ui.dialog.ReadSettingDialog;
@@ -49,6 +55,7 @@ import com.zjx.readlife.ireader.utils.Constant;
 import com.zjx.readlife.ireader.utils.LogUtils;
 import com.zjx.readlife.ireader.utils.RxUtils;
 import com.zjx.readlife.ireader.utils.ScreenUtils;
+import com.zjx.readlife.ireader.utils.ToastUtils;
 import com.zjx.readlife.ireader.widget.page.NetPageLoader;
 import com.zjx.readlife.ireader.utils.StringUtils;
 import com.zjx.readlife.ireader.utils.SystemBarUtils;
@@ -56,9 +63,11 @@ import com.zjx.readlife.ireader.widget.page.PageLoader;
 import com.zjx.readlife.ireader.widget.page.PageView;
 import com.zjx.readlife.ireader.widget.page.TxtChapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
 import static android.view.View.GONE;
@@ -118,7 +127,8 @@ public class ReadActivity extends BaseMVPActivity<ReadContract.Presenter>
     TextView mTvDownload;
     @BindView(R.id.read_tv_setting)
     TextView mTvSetting;
-
+   @BindView(R.id.tvDownloadProgress)
+     TextView mtvDownloadProgress; //下载进度提示
     /***************left slide*******************************/
     @BindView(R.id.read_iv_category)
     ListView mLvCategory;
@@ -133,7 +143,10 @@ public class ReadActivity extends BaseMVPActivity<ReadContract.Presenter>
     private CollBookBean mCollBook;
     //控制屏幕常亮
     private PowerManager.WakeLock mWakeLock;
-
+    // 下载逻辑======start
+    private ServiceConnection mConn;
+    private DownloadService.IDownloadManager mService;
+    // 下载逻辑=====end
     // 接收电池信息和时间更新的广播
     private BroadcastReceiver mReceiver = new BroadcastReceiver(){
         @Override
@@ -495,20 +508,114 @@ public class ReadActivity extends BaseMVPActivity<ReadContract.Presenter>
                         .setItems(new String[]{"后面五十章", "后面全部", "全部"}, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                int position= mPageLoader.getChapterPos();
+                                int count=mCollBook.getChaptersCount();
+                                if(position==count-1){
+                                    return;
+                                }
+                                DownloadTaskBean task = new DownloadTaskBean();
+                                task.setTaskName(mCollBook.getTitle());
+                                task.setBookId(mCollBook.get_id());
+
                                 switch (which) {
                                     case 0:
+
+                                        List<BookChapterBean> chapterBeans=new ArrayList<BookChapterBean>();
+                                        ;
+                                        int maxPostion=0;
+                                        if((count-position)>50){
+                                            maxPostion=position+51;
+                                        }else{
+                                            maxPostion=count;
+                                        }
+                                        position++;
+                                        for(int i=position;i<maxPostion;i++){
+                                            BookChapterBean bookChapterBean=mCollBook.getBookChapterList().get(i);
+                                            chapterBeans.add(bookChapterBean);
+                                        }
+                                             task.setLastChapter(chapterBeans.size());
+                                        task.setBookChapters(chapterBeans);
+
+                                        break;
                                     case 1:
+                                        position++;
+                                        List<BookChapterBean> chapterBeans2=new ArrayList<BookChapterBean>();
+                                        chapterBeans2.addAll(position,mCollBook.getBookChapters());
+                                        task.setLastChapter(chapterBeans2.size());
+                                        task.setBookChapters(chapterBeans2);
+                                        break;
                                     case 2:
-                                        DownloadTaskBean task = new DownloadTaskBean();
-                                        task.setTaskName(mCollBook.getTitle());
-                                        task.setBookId(mCollBook.get_id());
+                                         task.setLastChapter(mCollBook.getBookChapters().size());
                                         task.setBookChapters(mCollBook.getBookChapters());
-                                        task.setLastChapter(mCollBook.getBookChapters().size());
-                                        RxBus.getInstance().post(task);
                                         break;
-                                    default:
-                                        break;
+
                                 }
+
+                                RxBus.getInstance().post(task);
+                                mConn = new ServiceConnection() {
+                                    @Override
+                                    public void onServiceConnected(ComponentName name, IBinder service) {
+                                        mService = (DownloadService.IDownloadManager) service;
+                                        //添加数据到队列中
+
+
+                                        mService.setOnDownloadListener(new DownloadService.OnDownloadListener() {
+                                            @Override
+                                            public void onDownloadChange(int pos, int status,int chapterIndex, String msg) {
+                                                if(mLlBottomMenu.getVisibility()==VISIBLE){
+                                                    List<DownloadTaskBean> downloadlist=mService.getDownloadTaskList();
+                                                    if(mCollBook.get_id().equals(downloadlist.get(pos).getBookId())){
+                                                    if(status==DownloadTaskBean.STATUS_LOADING){
+                                                        if(mtvDownloadProgress.getVisibility()==GONE){
+                                                            mtvDownloadProgress.setVisibility(View.VISIBLE);
+                                                        }
+                                                        mtvDownloadProgress.setText(msg);}
+                                                        else if(status==DownloadTaskBean.STATUS_FINISH){
+                                                        if(mtvDownloadProgress.getVisibility()==GONE){
+                                                            mtvDownloadProgress.setVisibility(View.VISIBLE);
+                                                        }
+                                                        mtvDownloadProgress.setText(msg );
+
+                                                        mtvDownloadProgress.postDelayed(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                mtvDownloadProgress.setVisibility(View.GONE);
+                                                            }
+                                                        },2000);
+                                                    }
+                                                    }}
+
+                                            }
+
+                                            @Override
+                                            public void onDownloadResponse(int pos, int status) {
+                                                if(mLlBottomMenu.getVisibility()==VISIBLE){
+                                                    List<DownloadTaskBean> downloadlist=mService.getDownloadTaskList();
+                                                    if(mCollBook.get_id().equals(downloadlist.get(pos).getBookId())){
+                                                    if(mtvDownloadProgress.getVisibility()==GONE){
+                                                        mtvDownloadProgress.setVisibility(View.VISIBLE);
+                                                    }
+                                                    if(status==DownloadTaskBean.STATUS_WAIT){
+                                                        mtvDownloadProgress.setText("排队等待中。。。");
+                                                    }else if(status == DownloadTaskBean.STATUS_PAUSE){
+                                                        mtvDownloadProgress.setText("暂停中。。。");
+                                                    }}
+
+                                                }
+                                            }
+
+
+                                        });
+
+
+                                    }
+
+                                    @Override
+                                    public void onServiceDisconnected(ComponentName name) {
+                                    }
+                                };
+                                //绑定
+                                bindService(new Intent(ReadActivity.this, DownloadService.class), mConn, Service.BIND_AUTO_CREATE);
                             }
                         });
                 builder.show();
@@ -528,6 +635,15 @@ public class ReadActivity extends BaseMVPActivity<ReadContract.Presenter>
         mSettingDialog.setOnDismissListener(
                 dialog ->  hideSystemBar()
         );
+        // 下载提示
+         Disposable downloadDisp=RxBus.getInstance()
+                  .toObservable(DownloadMessage.class)
+                  .observeOn(AndroidSchedulers.mainThread())
+                  .subscribe(event->{
+                      if(mtvDownloadProgress.getVisibility()==GONE)    {
+                              ToastUtils.show(event.message);  }
+                  });
+          addDisposable(downloadDisp);
     }
 
     /**
@@ -762,6 +878,8 @@ public class ReadActivity extends BaseMVPActivity<ReadContract.Presenter>
         super.onDestroy();
         unregisterReceiver(mReceiver);
         mPageLoader.closeBook();
+        if(mConn!=null){
+        unbindService(mConn);}
     }
 
     @Override
@@ -809,4 +927,6 @@ public class ReadActivity extends BaseMVPActivity<ReadContract.Presenter>
             }
         }
     }
+
+
 }
