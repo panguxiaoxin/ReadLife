@@ -513,6 +513,9 @@ public class ReadActivity extends BaseMVPActivity<ReadContract.Presenter>
                                 if(position==count-1){
                                     return;
                                 }
+                                if(mConn!=null){
+                                    unbindService(mConn);
+                                }
                                 DownloadTaskBean task = new DownloadTaskBean();
                                 task.setTaskName(mCollBook.getTitle());
                                 task.setBookId(mCollBook.get_id());
@@ -540,7 +543,10 @@ public class ReadActivity extends BaseMVPActivity<ReadContract.Presenter>
                                     case 1:
                                         position++;
                                         List<BookChapterBean> chapterBeans2=new ArrayList<BookChapterBean>();
-                                        chapterBeans2.addAll(position,mCollBook.getBookChapters());
+                                        for(int i=position;i<mCollBook.getBookChapters().size();i++){
+                                            BookChapterBean bookChapterBean=mCollBook.getBookChapterList().get(i);
+                                            chapterBeans2.add(bookChapterBean);
+                                        }
                                         task.setLastChapter(chapterBeans2.size());
                                         task.setBookChapters(chapterBeans2);
                                         break;
