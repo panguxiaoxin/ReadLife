@@ -12,6 +12,7 @@ import com.zjx.readlife.ireader.presenter.BookSortPresenter;
 import com.zjx.readlife.ireader.presenter.contract.BookSortContract;
 import com.zjx.readlife.ireader.ui.adapter.BookSortAdapter;
 import com.zjx.readlife.ireader.ui.base.BaseMVPActivity;
+import com.zjx.readlife.ireader.utils.LogUtils;
 import com.zjx.readlife.ireader.widget.RefreshLayout;
 import com.zjx.readlife.ireader.widget.itemdecoration.DividerGridItemDecoration;
 
@@ -50,15 +51,18 @@ public class BookSortActivity extends BaseMVPActivity<BookSortContract.Presenter
         super.setUpToolbar(toolbar);
         getSupportActionBar().setTitle(
                 getResources().getString(R.string.nb_fragment_find_sort));
+        LogUtils.d("setUpToolbar");
     }
 
     @Override
     protected void initWidget() {
         super.initWidget();
+        LogUtils.d("initWidget");
         setUpAdapter();
     }
 
     private void setUpAdapter(){
+        LogUtils.d("setUpAdapter");
         mBoyAdapter = new BookSortAdapter();
         mGirlAdapter = new BookSortAdapter();
 
@@ -81,6 +85,7 @@ public class BookSortActivity extends BaseMVPActivity<BookSortContract.Presenter
     @Override
     protected void initClick() {
         super.initClick();
+                LogUtils.d("initClickinitClick");
         mBoyAdapter.setOnItemClickListener(
                 (view,pos) -> {
                     BookSubSortBean subSortBean = mSubSortPackage.getMale().get(pos);
@@ -102,7 +107,7 @@ public class BookSortActivity extends BaseMVPActivity<BookSortContract.Presenter
     @Override
     protected void processLogic() {
         super.processLogic();
-
+                         LogUtils.d("processLogic");
         mRlRefresh.showLoading();
         mPresenter.refreshSortBean();
     }

@@ -30,8 +30,8 @@ public class DividerGridItemDecoration extends RecyclerView.ItemDecoration
     }
 
     public DividerGridItemDecoration(Context context, @DrawableRes int widthDividerRes,@DrawableRes int heightDividerRes){
-        mWidthDivider = context.getDrawable(widthDividerRes);
-        mHeightDivider = context.getDrawable(heightDividerRes);
+        mWidthDivider = context.getResources().getDrawable(widthDividerRes);
+        mHeightDivider = context.getResources().getDrawable(heightDividerRes);
     }
 
     @Override

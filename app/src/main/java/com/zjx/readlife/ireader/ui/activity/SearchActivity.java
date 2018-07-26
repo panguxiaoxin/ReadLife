@@ -76,7 +76,7 @@ public class SearchActivity extends BaseMVPActivity<SearchContract.Presenter>
     protected void initWidget() {
         super.initWidget();
         setUpAdapter();
-        mRlRefresh.setBackground(getDrawable(R.color.white));
+        mRlRefresh.setBackgroundResource((R.color.white));
     }
 
     private void setUpAdapter(){
