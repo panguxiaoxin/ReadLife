@@ -7,10 +7,13 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 
 import com.zjx.readlife.ireader.R;
+import com.zjx.readlife.ireader.RxBus;
+import com.zjx.readlife.ireader.event.IndexTabEvent;
 
 import java.util.List;
 
 import butterknife.BindView;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
  * Created by readlife on 17-4-24.
@@ -47,6 +50,14 @@ public abstract class BaseTabActivity extends BaseActivity {
         mVp.setAdapter(adapter);
         mVp.setOffscreenPageLimit(3);
         mTlIndicator.setupWithViewPager(mVp);
+        RxBus.getInstance().toObservable(IndexTabEvent.class).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                       indexTabEvent -> {
+                           if(indexTabEvent.getIndex()<mTitleList.size()){
+                               mTlIndicator.getTabAt(indexTabEvent.getIndex()).select();
+                           }
+                       }
+        );
     }
 
     /**

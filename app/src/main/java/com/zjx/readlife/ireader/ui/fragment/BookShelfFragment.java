@@ -16,6 +16,7 @@ import com.zjx.readlife.ireader.RxBus;
 import com.zjx.readlife.ireader.event.DeleteResponseEvent;
 import com.zjx.readlife.ireader.event.DeleteTaskEvent;
 import com.zjx.readlife.ireader.event.DownloadMessage;
+import com.zjx.readlife.ireader.event.IndexTabEvent;
 import com.zjx.readlife.ireader.event.RecommendBookEvent;
 import com.zjx.readlife.ireader.model.bean.CollBookBean;
 import com.zjx.readlife.ireader.model.local.BookRepository;
@@ -340,6 +341,7 @@ public class BookShelfFragment extends BaseMVPFragment<BookShelfContract.Present
             view.setOnClickListener(
                     (v) -> {
                         //设置RxBus回调
+                        RxBus.getInstance().post(new IndexTabEvent(2));
                     }
             );
             return view;
