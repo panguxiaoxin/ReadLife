@@ -14,6 +14,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 
 /**
  * Created by readlife on 17-4-24.
@@ -50,7 +51,7 @@ public abstract class BaseTabActivity extends BaseActivity {
         mVp.setAdapter(adapter);
         mVp.setOffscreenPageLimit(3);
         mTlIndicator.setupWithViewPager(mVp);
-        RxBus.getInstance().toObservable(IndexTabEvent.class).observeOn(AndroidSchedulers.mainThread())
+       Disposable tabDisp= RxBus.getInstance().toObservable(IndexTabEvent.class).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                        indexTabEvent -> {
                            if(indexTabEvent.getIndex()<mTitleList.size()){
@@ -58,6 +59,7 @@ public abstract class BaseTabActivity extends BaseActivity {
                            }
                        }
         );
+        addDisposable(tabDisp);
     }
 
     /**
