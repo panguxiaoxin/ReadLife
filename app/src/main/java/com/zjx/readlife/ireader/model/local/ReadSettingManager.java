@@ -34,7 +34,11 @@ public class ReadSettingManager {
     public static final String SHARED_READ_VOLUME_TURN_PAGE = "shared_read_volume_turn_page";
     public static final String SHARED_READ_FULL_SCREEN = "shared_read_full_screen";
     public static final String SHARED_READ_FONT_STYLE= "shared_read_font_style";
-
+    public static final String SHARED_READ_PAGE_MARGIN_LEFTRIGHT= "shared_read_page_margin_leftright";//左右间距
+    public static final String SHARED_READ_PAGE_MARGIN_TOPBOTTOM= "shared_read_page_margin_topbottom";//上线间距
+    public static final String SHARED_READ_PAGE_PARAGRAPH_INTERVAL= "shared_read_page_paragraph_interval";//段间距
+    public static final String SHARED_READ_PAGE_LINE_INTERVAL= "shared_read_page_line_interval";//行间距
+    public static final String SHARED_READ_PAGE_TITLE_INTERVAL= "shared_read_page_title_interval";//标题间距
     private static volatile ReadSettingManager sInstance;
 
     private SharedPreUtils sharedPreUtils;
@@ -126,5 +130,36 @@ public class ReadSettingManager {
 
     public boolean isFullScreen(){
         return sharedPreUtils.getBoolean(SHARED_READ_FULL_SCREEN,false);
+    }
+    public void setPageMarginLeftright(int width){
+        sharedPreUtils.putInt(SHARED_READ_PAGE_MARGIN_LEFTRIGHT,width);
+    }
+    public void setPageMarginTopbottom(int height){
+        sharedPreUtils.putInt(SHARED_READ_PAGE_MARGIN_TOPBOTTOM,height);
+    }
+    public  int getSharedReadPageMarginLeftright() {
+        return sharedPreUtils.getInt(SHARED_READ_PAGE_MARGIN_LEFTRIGHT,28)  ;
+    }
+
+    public  int getSharedReadPageMarginTopbottom() {
+        return  sharedPreUtils.getInt(SHARED_READ_PAGE_MARGIN_TOPBOTTOM,12);
+    }
+    public void setPageParagraphInterval(int paragraphInterval){
+        sharedPreUtils.putInt(SHARED_READ_PAGE_PARAGRAPH_INTERVAL,paragraphInterval);
+    }
+    public  int getSharedReadPageParagraphInterval() {
+        return   sharedPreUtils.getInt(SHARED_READ_PAGE_PARAGRAPH_INTERVAL,getTextSize()/2);
+    }
+    public void setPageLineInterval(int lineInterval){
+        sharedPreUtils.putInt(SHARED_READ_PAGE_LINE_INTERVAL,lineInterval);
+    }
+    public  int  getSharedReadPageLineInterval() {
+        return  sharedPreUtils.getInt(SHARED_READ_PAGE_LINE_INTERVAL,getTextSize()/2);
+    }
+    public void setPageTitleInterval(int titleInterval){
+        sharedPreUtils.putInt(SHARED_READ_PAGE_TITLE_INTERVAL,titleInterval);
+    }
+    public int  getSharedReadPageTitleInterval() {
+        return  sharedPreUtils.getInt(SHARED_READ_PAGE_TITLE_INTERVAL,getTextSize()/2);
     }
 }
